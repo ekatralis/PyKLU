@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+rm ./lib/*
+rm ./include/*
+
+PKG_DIR=$(pwd)
+cd ./extern/SuiteSparse/KLU
+make clean
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/SuiteSparse_config/xerbla
+make all
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/KLU
+make all
+make install
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/AMD
+make install
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/BTF
+make install
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/CHOLMOD
+make install
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/COLAMD
+make install
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/SuiteSparse_config
+make install
+cd $PKG_DIR
