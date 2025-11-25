@@ -3,8 +3,8 @@
 .project
 .pydevproject
 *.png
-lib
-include
+lib*
+include*
 *~
 build
 *.a
