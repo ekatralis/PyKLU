@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+PKG_DIR=$(pwd)
+
+cd ./extern/SuiteSparse/KLU
+make uninstall
+make clean
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/AMD
+make uninstall
+make clean
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/BTF
+make uninstall
+make clean
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/CHOLMOD
+make uninstall
+make clean
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/COLAMD
+make uninstall
+make clean
+cd $PKG_DIR
+
+cd ./extern/SuiteSparse/SuiteSparse_config
+make uninstall
+make clean
+cd $PKG_DIR
