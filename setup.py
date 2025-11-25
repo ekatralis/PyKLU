@@ -45,6 +45,8 @@ class BuildExtWithSuiteSparse(build_ext):
                     "-S", str(comp_src),
                     "-B", str(build_dir),
                     "-DSUITESPARSE_LOCAL_INSTALL=1",
+                    "-DCMAKE_C_FLAGS=-fPIC",
+                    "-DCMAKE_CXX_FLAGS=-fPIC",
                     "-DBUILD_SHARED_LIBS=ON",
                     "-DBUILD_STATIC_LIBS=ON",
                     "-DSUITESPARSE_USE_OPENMP=OFF",   # <- key line
