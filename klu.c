@@ -12,12 +12,12 @@
             "/opt/homebrew/anaconda3/envs/CERN_env_311/lib/python3.11/site-packages/numpy/_core/include/numpy/ufuncobject.h"
         ],
         "extra_link_args": [
-            "-Wl,-rpath,@loader_path/lib"
+            "-Wl,-rpath,/Users/vkatralis/Documents/CERN/PyCOMPLETE/MyKLU/extern/SuiteSparse/lib"
         ],
         "include_dirs": [
             "/Users/vkatralis/Documents/CERN/PyCOMPLETE/MyKLU",
             "/opt/homebrew/anaconda3/envs/CERN_env_311/lib/python3.11/site-packages/numpy/_core/include",
-            "/Users/vkatralis/Documents/CERN/PyCOMPLETE/MyKLU/include"
+            "/Users/vkatralis/Documents/CERN/PyCOMPLETE/MyKLU/extern/SuiteSparse/include/suitesparse"
         ],
         "libraries": [
             "klu",
@@ -27,7 +27,7 @@
             "suitesparseconfig"
         ],
         "library_dirs": [
-            "/Users/vkatralis/Documents/CERN/PyCOMPLETE/MyKLU/lib"
+            "/Users/vkatralis/Documents/CERN/PyCOMPLETE/MyKLU/extern/SuiteSparse/lib"
         ],
         "name": "klu",
         "sources": [
