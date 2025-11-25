@@ -11,8 +11,8 @@ INC_DIR = os.path.join(SS_ROOT, "include", "suitesparse")
 
 extensions = [
     Extension(
-        "klu",
-        ["klu.pyx", "klu_interf.c"],
+        "_klu",
+        ["_klu.pyx", "klu_interf.c"],
         include_dirs=[
             np.get_include(),
             INC_DIR,
