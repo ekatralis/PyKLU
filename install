@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-mkdir lib
-mkdir include
-
 ./compile_klu
 
 rm *.so

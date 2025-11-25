@@ -3,31 +3,31 @@
 PKG_DIR=$(pwd)
 
 cd ./extern/SuiteSparse/KLU
-make local
-make install
+make uninstall
+make clean
 cd $PKG_DIR
 
 cd ./extern/SuiteSparse/AMD
-make local
-make install
+make uninstall
+make clean
 cd $PKG_DIR
 
 cd ./extern/SuiteSparse/BTF
-make local
-make install
+make uninstall
+make clean
 cd $PKG_DIR
 
 cd ./extern/SuiteSparse/CHOLMOD
-make local
-make install
+make uninstall
+make clean
 cd $PKG_DIR
 
 cd ./extern/SuiteSparse/COLAMD
-make local
-make install
+make uninstall
+make clean
 cd $PKG_DIR
 
 cd ./extern/SuiteSparse/SuiteSparse_config
-make local
-make install
+make uninstall
+make clean
 cd $PKG_DIR
