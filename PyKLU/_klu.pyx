@@ -1,4 +1,3 @@
-cimport _klu
 import numpy as np
 cimport numpy as np
 
