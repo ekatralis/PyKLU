@@ -5,14 +5,18 @@ import numpy as np
 import os
 
 HERE = os.path.dirname(__file__)
-LIB_DIR = os.path.join(HERE, "lib")
-INC_DIR = os.path.join(HERE, "include")
+SS_ROOT = os.path.join(HERE, "extern", "SuiteSparse")
+LIB_DIR = os.path.join(SS_ROOT, "lib")
+INC_DIR = os.path.join(SS_ROOT, "include", "suitesparse")
 
 extensions = [
     Extension(
         "klu",
         ["klu.pyx", "klu_interf.c"],
-        include_dirs=[np.get_include(), INC_DIR],
+        include_dirs=[
+            np.get_include(),
+            INC_DIR,
+        ],
         libraries=[
             "klu",
             "btf",
@@ -21,10 +25,7 @@ extensions = [
             "suitesparseconfig",
         ],
         library_dirs=[LIB_DIR],
-        extra_link_args=[
-            # Make dyld search ./lib relative to the .so at import time
-            "-Wl,-rpath,@loader_path/lib",
-        ],
+        extra_link_args=[f"-Wl,-rpath,{LIB_DIR}"],  # <-- add this line
     )
 ]
 
