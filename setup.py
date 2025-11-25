@@ -25,12 +25,12 @@ class BuildExtWithSuiteSparse(build_ext):
         # If you already have CMake configured per component, you can skip this
         # and just rely on extern/SuiteSparse/lib/*.a existing.
         suitesparse_components = [
-            "KLU",
+            "SuiteSparse_config",
+            "COLAMD",
             "AMD",
             "BTF",
             "CHOLMOD",
-            "COLAMD",
-            "SuiteSparse_config",
+            "KLU",
         ]
 
         for comp in suitesparse_components:
