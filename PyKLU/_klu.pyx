@@ -86,7 +86,7 @@ cdef class Klu:
 
             if copy:
                 # KLU expects column-major layout for multi-RHS
-                X2 = np.asfortranarray(A2, dtype=np.float64)
+                X2 = np.array(A2, dtype=np.float64, copy=True, order="F")
             else:
                 if not A2.flags["F_CONTIGUOUS"]:
                     raise ValueError(
@@ -104,6 +104,14 @@ cdef class Klu:
 
         else:
             raise ValueError("B must be 1D or 2D array")
+
+    cpdef inplace_solve_batched(self, cnp.ndarray[cnp.float64_t, ndim=2, mode="fortran"] B):
+        cdef int nrhs = B.shape[1]
+        lusolve(self.lus, &B[0,0], nrhs)
+    
+    cpdef inplace_solve_vector(self, cnp.ndarray[cnp.float64_t, ndim=1] B):
+        cdef int nrhs = 1
+        lusolve(self.lus, &B[0], nrhs)
 
     def __dealloc__(self):
         if self.lus is not NULL:
