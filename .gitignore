@@ -10,3 +10,6 @@ build
 *.a
 *.o
 .DS_Store
+*.egg-info
+__pycache__
+.backup_test/
