@@ -16,7 +16,7 @@ typedef struct{
 lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr, 
 		int* Acsc_indices_ptr, int* Acsc_indptr_ptr);
 
-void lusolve(lu_state* lus, double* b, double* x);
+void lusolve(lu_state* lus, double* BX, int nrhs);
 
 void lu_destroy(lu_state* lus);
 
