@@ -78,7 +78,7 @@ cdef class Klu:
             # --- 2D RHS: shape (m,k) ---
             if arr.shape[0] != self.m:
                 raise ValueError(
-                    "B has shape %s, expected (%d, k)" % (tuple(arr.shape), self.m)
+                    "B has shape %s, expected (%d, k)" % (tuple([arr.shape[0],arr.shape[1]]), self.m)
                 )
 
             A2 = <cnp.ndarray[cnp.float64_t, ndim=2]> arr

@@ -13,3 +13,4 @@ build
 *.egg-info
 __pycache__
 .backup_test/
+PyKLU/_klu.c
