@@ -49,7 +49,8 @@ class BuildExtWithSuiteSparse(build_ext):
                     "-DCMAKE_CXX_FLAGS=-fPIC",
                     "-DBUILD_SHARED_LIBS=ON",
                     "-DBUILD_STATIC_LIBS=ON",
-                    "-DSUITESPARSE_USE_OPENMP=OFF",   # <- key line
+                    "-DSUITESPARSE_USE_OPENMP=OFF",
+                    "-DSUITESPARSE_USE_CUDA=OFF",   # <--- disable CUDA globally
                     # optionally:
                     # "-DSUITESPARSE_USE_FORTRAN=OFF",
                 ]
