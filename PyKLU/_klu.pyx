@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csc_matrix
 cimport numpy as cnp
 
 cdef class Klu:
@@ -6,7 +7,8 @@ cdef class Klu:
     cdef int m, n
 
     def __init__(self, Acsc):
-        Acsc = Acsc.tocsc()
+        if not isinstance(Acsc, csc_matrix):
+            raise TypeError("A must be a scipy.sparse.csc_matrix")
         self.m, self.n = Acsc.shape
         cdef int nnz = Acsc.nnz
 
