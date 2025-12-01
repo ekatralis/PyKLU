@@ -40,7 +40,7 @@ pip install -e .
 
 PyKLU is licensed under the GNU Lesser General Public License v2.1 (LGPL-2.1) (see `LICENSE`).  
 This project includes the KLU sparse solver from SuiteSparse, distributed under the GNU LGPL v2.1 (or later) with a static-linking exception.  
-See `LICENSE.suitesparse` for the full SuiteSparse license text.
+See `LICENSE_SuiteSparse.txt` for the full SuiteSparse license text.
 
 ## TODO
 - Package is still under development. This README serves as preliminary documentation
