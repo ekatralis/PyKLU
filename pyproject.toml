@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "Python bindings for the SuiteSparse KLU sparse linear solver"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+license = { file = "LICENSE.txt" }
 authors = [
   { name = "Evangelos Katralis", email = "evangelos.katralis@cern.ch" },
   { name = "Giovanni Iadarola", email = "giovanni.iadarola@cern.ch" }
