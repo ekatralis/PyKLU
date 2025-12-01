@@ -34,7 +34,7 @@ def issymmetric(A, tol=0):
         return abs(diff).max() <= tol
 
 def rel_residual(A,x,b):
-    return npl.norm(A@x - b) / (scspl.norm(A)*npl.norm(x) + npl.norm(b))
+    return npl.norm(A@x - b) / (npl.norm(b))
 
 def assert_close_to_precision(value, precision):
     assert value <= precision, (f"Value {value} not within precision {precision}")
