@@ -1,3 +1,56 @@
+[project]
+name = "PyKLU"
+version = "0.1.0"
+description = "Python bindings for the SuiteSparse KLU sparse linear solver"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Evangelos Katralis", email = "evangelos.katralis@cern.ch" },
+  { name = "Giovanni Iadarola", email = "giovanni.iadarola@cern.ch" }
+]
+dependencies = [
+  "numpy",
+  "scipy",
+]
+
+# Optional but recommended:
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Mathematics",
+
+  # License: project is under LGPL-2.1 (with full text in LICENSE)
+  "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+
+  # Only tested on Linux and macOS so far
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS :: MacOS X",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ekatralis/PyKLU"
+"Source"   = "https://github.com/ekatralis/PyKLU"
+"Issues"   = "https://github.com/ekatralis/PyKLU/issues"
+"License (SuiteSparse)" = "https://github.com/DrTimothyAldenDavis/SuiteSparse/blob/stable/LICENSE.txt"
+
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+]
+
 [build-system]
 requires = [
   "setuptools>=64",

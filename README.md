@@ -35,10 +35,14 @@ Then from within the repository folder (`cd PyKLU`), the package can be installe
 ```bash
 pip install -e .
 ```
+
+## Licensing
+
+PyKLU is licensed under the GNU Lesser General Public License v2.1 (LGPL-2.1) (see `LICENSE`).  
+This project includes the KLU sparse solver from SuiteSparse, distributed under the GNU LGPL v2.1 (or later) with a static-linking exception.  
+See `LICENSE.suitesparse` for the full SuiteSparse license text.
+
 ## TODO
 - Package is still under development. This README serves as preliminary documentation
 - As the intended goal is to publish this package on `PyPI`, we bundle the SuiteSparse libs together with `PyKLU`, which means that `OpenMP` had to be disabled. This shouldn't have any noticeable impact on performance, but the goal is to update setup.py, so PyKLU can be linked against any desired SuiteSparse library.
-- Allow RHS to be a matrix. Curently the API allows matrix RHS, but returns nonesense
-- Make API more robust, add asserts
-- Add tests for future development
-- Add CI stuff
+- Publish to PyPI
