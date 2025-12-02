@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-./compile_klu
-
-rm *.so
-./cythonize
