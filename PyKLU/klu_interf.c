@@ -1,14 +1,6 @@
 #include "klu_interf.h"
 
 
-void hello()
-{
-	printf("Hello!\n");
-}
-
-
-
-
 lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr, 
 		int* Acsc_indices_ptr, int* Acsc_indptr_ptr)
 {
@@ -30,7 +22,7 @@ lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr,
 	lus->Numeric = klu_factor (Acsc_indptr_ptr, Acsc_indices_ptr, Acsc_data_ptr, lus->Symbolic,
 								&(lus->Common));	   
 	
-	printf("Done factorization!\n");
+	// printf("Done factorization!\n");
 	   
 	return lus;
 }
@@ -47,11 +39,11 @@ void lusolve(lu_state* lus, double* BX, int nrhs)
 void lu_destroy(lu_state* lus)
 {
 	
-	printf("Destroying C klu objects...\n");
+	// printf("Destroying C klu objects...\n");
 	klu_free_symbolic (&(lus->Symbolic), &(lus->Common));
     klu_free_numeric (&(lus->Numeric), &(lus->Common));
     free(lus);
     	
-    printf("Done.\n");
+    // printf("Done.\n");
     	
 }

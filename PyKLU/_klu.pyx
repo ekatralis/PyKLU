@@ -9,6 +9,13 @@ cdef class Klu:
     def __init__(self, Acsc):
         if not isinstance(Acsc, csc_matrix):
             raise TypeError("A must be a scipy.sparse.csc_matrix")
+        
+        # ensure correct dtype (float64 for data, int32 for indices)
+        if Acsc.data.dtype != np.float64 or \
+           Acsc.indptr.dtype != np.int32 or \
+           Acsc.indices.dtype != np.int32:
+            Acsc = Acsc.astype(np.float64) 
+
         self.m, self.n = Acsc.shape
         cdef int nnz = Acsc.nnz
 
@@ -60,7 +67,7 @@ cdef class Klu:
 
             if copy:
                 # work on a separate array, user input untouched
-                X1 = np.array(A1, copy=True, order="C")
+                X1 = np.array(A1, dtype=np.float64, copy=True, order="C")
             else:
                 # in-place: overwrite arr (and thus B, if it *is* that array)
                 if not (A1.flags["C_CONTIGUOUS"] or A1.flags["F_CONTIGUOUS"]):
