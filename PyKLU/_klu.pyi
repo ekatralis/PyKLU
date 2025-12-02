@@ -1,4 +1,8 @@
 # PyKLU/_klu.pyi
+# PyKLU – Python bindings for SuiteSparse KLU
+# Copyright (C) 2015-2025 CERN
+# Licensed under the LGPL-2.1-or-later. See LICENSE for details.
+
 from __future__ import annotations
 
 from typing import Any

@@ -1,3 +1,8 @@
+# PyKLU/_klu.pxd
+# PyKLU – Python bindings for SuiteSparse KLU
+# Copyright (C) 2015-2025 CERN
+# Licensed under the LGPL-2.1-or-later. See LICENSE for details.
+
 cdef extern from "klu_interf.h":
 	
 	ctypedef struct lu_state:

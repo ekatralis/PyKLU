@@ -1,3 +1,8 @@
+# PyKLU/_test_helpers.py
+# PyKLU – Python bindings for SuiteSparse KLU
+# Copyright (C) 2015-2025 CERN
+# Licensed under the LGPL-2.1-or-later. See LICENSE for details.
+
 from functools import wraps
 import numpy.linalg as npl
 import scipy.sparse.linalg as scspl

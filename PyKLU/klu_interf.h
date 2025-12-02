@@ -1,10 +1,13 @@
+// PyKLU/klu_interf.h
+// PyKLU – Python bindings for SuiteSparse KLU
+// Copyright (C) 2015-2025 CERN
+// Licensed under the LGPL-2.1-or-later. See LICENSE for details.
+
 #ifndef __KLUINTERF
 #define __KLUINTERF
 
 #include <stdio.h>
 #include "klu.h"
-
-void hello();
 
 typedef struct{
 	int m;

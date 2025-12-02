@@ -1,3 +1,8 @@
+# PyKLU/_klu.pyx
+# PyKLU – Python bindings for SuiteSparse KLU
+# Copyright (C) 2015-2025 CERN
+# Licensed under the LGPL-2.1-or-later. See LICENSE for details.
+
 import numpy as np
 from scipy.sparse import csc_matrix
 cimport numpy as cnp

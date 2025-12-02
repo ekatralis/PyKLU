@@ -39,7 +39,7 @@ PyKLU factors a sparse matrix once and lets you efficiently solve multiple right
 
 ### (Recommended) Installation from PyPI
 
-PyKLU can be installed in :
+PyKLU can be installed via:
 
 ```bash
 pip install PyKLU
@@ -117,7 +117,7 @@ B = np.random.rand(A.shape[0], 5)
 
 X = solver.solve(B)
 ```
-The default behavior is to return a new array (copy and then perform in-place operations). The function can be used to perform in-place operations instead by setting `copy = False`. It is worth noting, that if the RHS is incompatible with the format expected (column-major, contiguous and float64), the operation will not be performed in place. 
+The default behavior (`copy=True`) is to allocate a new array, copy B into it, and then perform the solve in-place on that copy. The function can be used to perform in-place operations instead by setting `copy = False`. It is worth noting, that if the RHS is incompatible with the format expected (column-major, contiguous and float64), the operation will not be performed in place. 
 
 If the RHS has the correct format, it is possible to use the following functions to perform in-place operations, without performing any checks:
 ```python
@@ -150,6 +150,8 @@ print("x:", x)
 ```
 
 ## Licensing
+© 2015-2025 CERN.  
+Created by Evangelos Katralis (evangelos.katralis@cern.ch). This library is an extension of the [PyKLU](https://github.com/PyCOMPLETE/PyKLU) library developed by Giovanni Iadarola (giovanni.iadarola@cern.ch) as a part of the PyCOMPLETE project. 
 
 PyKLU is licensed under the GNU Lesser General Public License v2.1 (LGPL-2.1) (see `LICENSE`).  
 This project includes the KLU sparse solver from SuiteSparse, distributed under the GNU LGPL v2.1 (or later) with a static-linking exception.  
@@ -157,3 +159,4 @@ See `LICENSE_SuiteSparse.txt` for the full SuiteSparse license text.
 
 ## TODO
 - Add compatibility with complex128 datatypes
+- Windows support
