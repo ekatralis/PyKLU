@@ -6,6 +6,7 @@ from Cython.Build import cythonize
 import numpy as np
 import pathlib
 import subprocess
+from pathlib import Path
 
 
 ROOT = pathlib.Path(__file__).parent.resolve()
@@ -13,6 +14,11 @@ SS_ROOT = ROOT / "extern" / "SuiteSparse"
 LIB_DIR = SS_ROOT / "lib"
 INC_DIR = SS_ROOT / "include" / "suitesparse"
 
+version_file = Path(__file__).parent / "PyKLU/_version.py"
+dd = {}
+with open(version_file.absolute(), "r") as fp:
+    exec(fp.read(), dd)
+__version__ = dd["__version__"]
 
 class BuildExtWithSuiteSparse(build_ext):
     """
@@ -49,7 +55,8 @@ class BuildExtWithSuiteSparse(build_ext):
                     "-DCMAKE_CXX_FLAGS=-fPIC",
                     "-DBUILD_SHARED_LIBS=ON",
                     "-DBUILD_STATIC_LIBS=ON",
-                    "-DSUITESPARSE_USE_OPENMP=OFF",   # <- key line
+                    "-DSUITESPARSE_USE_OPENMP=OFF",
+                    "-DSUITESPARSE_USE_CUDA=OFF",   # <--- disable CUDA globally
                     # optionally:
                     # "-DSUITESPARSE_USE_FORTRAN=OFF",
                 ]
@@ -110,7 +117,7 @@ def make_extensions():
 
 setup(
     name="PyKLU",
-    version="0.1.0",
+    version=__version__,
     packages=["PyKLU"],
     ext_modules=make_extensions(),
     cmdclass={"build_ext": BuildExtWithSuiteSparse},

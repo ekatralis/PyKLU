@@ -35,15 +35,13 @@ lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr,
 	return lus;
 }
 
-void lusolve(lu_state* lus, double* b, double* x)
+
+void lusolve(lu_state* lus, double* BX, int nrhs)
 {
-	
-	int ii;
-	for (ii=0;ii<lus->m;ii++) x[ii]=b[ii];
-	klu_solve (lus->Symbolic, lus->Numeric, lus->m, 1, x, &(lus->Common)) ;
-	//printf("Over with construct Klu\n");
-	   
-        
+    int ok = klu_solve(lus->Symbolic, lus->Numeric, lus->m, nrhs, BX, &(lus->Common));
+    if (!ok) {
+        printf("klu_solve failed (status %d)\n", lus->Common.status);
+    }
 }
 
 void lu_destroy(lu_state* lus)
