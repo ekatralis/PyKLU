@@ -7,6 +7,7 @@ import numpy as np
 import pathlib
 import subprocess
 from pathlib import Path
+import os
 
 
 ROOT = pathlib.Path(__file__).parent.resolve()
@@ -45,8 +46,8 @@ class BuildExtWithSuiteSparse(build_ext):
             build_dir.mkdir(exist_ok=True)
 
             print(f"Configuring SuiteSparse component: {comp}")
-            subprocess.check_call(
-                [
+            disable_fortran = os.environ.get("PYKLU_DISABLE_FORTRAN", "0") == "1"
+            cmake_cmd = [
                     "cmake",
                     "-S", str(comp_src),
                     "-B", str(build_dir),
@@ -57,9 +58,11 @@ class BuildExtWithSuiteSparse(build_ext):
                     "-DBUILD_STATIC_LIBS=ON",
                     "-DSUITESPARSE_USE_OPENMP=OFF",
                     "-DSUITESPARSE_USE_CUDA=OFF",   # <--- disable CUDA globally
-                    # optionally:
-                    # "-DSUITESPARSE_USE_FORTRAN=OFF",
                 ]
+            if disable_fortran:
+                cmake_cmd.append("-DSUITESPARSE_USE_FORTRAN=OFF")
+            subprocess.check_call(
+                cmake_cmd
             )
 
 
