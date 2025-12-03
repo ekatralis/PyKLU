@@ -4,14 +4,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build for ${{ matrix.os }} / Python ${{ matrix.pyver }}
+  build-wheels:
+    name: Build wheels (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-13, macos-14]
-        pyver: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        pyver: [cp39, cp310, cp311, cp312, cp313, cp314]
 
     steps:
       - name: Check out source (with submodules)
@@ -20,63 +19,94 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.pyver }}
-          activate-environment: build
-          auto-activate-base: false
-          use-mamba: true
-          miniforge-version: latest
+          python-version: "3.11"
 
-      - name: Install build dependencies (conda + pip)
-        # -l makes this a login shell so conda "just works"
-        shell: bash -l {0}
-        run: |
-          # Your conda installs
-          mamba install cmake -y
-          mamba install -c conda-forge libblas -y
+      - name: Install cibuildwheel
+        run: python -m pip install --upgrade pip cibuildwheel
 
-          # Your pip installs
-          python -m pip install --upgrade pip
-          python -m pip install numpy scipy
+      - name: Build wheels with cibuildwheel
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          # Build for these CPython versions
+          CIBW_BUILD: ${{ matrix.pyver }}-*
 
-          # Build backend
-          python -m pip install build
+          # Linux: run inside manylinux containers, use yum
+          CIBW_BEFORE_BUILD_LINUX: |
+            yum install -y openblas-devel || true
+            python -m pip install --upgrade pip
+            python -m pip install cmake numpy scipy
 
-      - name: Build distributions
-        shell: bash -l {0}
-        run: |
-          python -m build
-          ls dist
+          # macOS: runs directly on the macOS runner, use Homebrew
+          CIBW_BEFORE_BUILD_MACOS: |
+            brew install openblas || true
+            python -m pip install --upgrade pip
+            python -m pip install cmake numpy scipy
 
-      - name: Upload artifacts
+          # Skip 32-bit & musllinux if you don’t care about them
+          CIBW_SKIP: "cp3?-manylinux_i686 *musllinux*"
+
+      - name: Upload wheel artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ matrix.os }}-py${{ matrix.pyver }}
-          path: dist/*
+          name: wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: wheelhouse/*.whl
 
-  publish-to-pypi:
+  build-sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build
+        run: python -m pip install --upgrade pip build
+
+      - name: Build sdist
+        run: python -m build --sdist
+
+      - name: Upload sdist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  publish-to-testpypi:
     name: Publish to TestPyPI
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build-wheels, build-sdist]
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/PyKLU   # adjust if your package name differs
+      url: https://test.pypi.org/project/pyklu/
 
     permissions:
-      id-token: write   # needed for PyPI trusted publishing
+      id-token: write
 
     steps:
-      - name: Download all dists
+      - name: Download wheels
         uses: actions/download-artifact@v4
         with:
-          pattern: dist-*
+          pattern: wheels-*
           path: dist
           merge-multiple: true
 
-      - name: Show downloaded files
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Show files to be uploaded
         run: ls -R dist
 
       - name: Publish to TestPyPI
@@ -84,4 +114,3 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
-
