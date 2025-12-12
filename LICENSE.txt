@@ -1,6 +1,3 @@
-PyKLU – Python bindings for SuiteSparse KLU
-Copyright (C) 2015-2025 CERN
-
 This software is released under the terms of the GNU Lesser General Public
 License version 2.1 or (at your option) any later version.
 
