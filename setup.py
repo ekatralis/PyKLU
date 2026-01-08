@@ -8,6 +8,11 @@ import pathlib
 import subprocess
 from pathlib import Path
 import os
+import sys
+
+IS_WINDOWS = sys.platform == "win32"
+if IS_WINDOWS:
+    CONDA_PREFIX = os.environ.get("CONDA_PREFIX")
 
 
 ROOT = pathlib.Path(__file__).parent.resolve()
@@ -88,6 +93,42 @@ class BuildExtWithSuiteSparse(build_ext):
 
 
 def make_extensions():
+    if IS_WINDOWS:
+        if not CONDA_PREFIX:
+            raise RuntimeError("CONDA_PREFIX not set. Use a conda environment.")
+
+        include_dirs = [
+            "PyKLU",
+            np.get_include(),
+            os.path.join(CONDA_PREFIX, "Library", "include", "suitesparse"),
+        ]
+
+        library_dirs = [
+            os.path.join(CONDA_PREFIX, "Library", "lib"),
+        ]
+
+        libraries = [
+            "klu",
+            "btf",
+            "amd",
+            "colamd",
+            "suitesparseconfig",
+            "openblas",
+        ]
+
+        ext = Extension(
+            "PyKLU._klu",
+            sources=[
+                "PyKLU/_klu.pyx",
+                "PyKLU/klu_interf.c",
+            ],
+            include_dirs=include_dirs,
+            library_dirs=library_dirs,
+            libraries=libraries,
+        )
+
+        return cythonize([ext])
+
     # List the static libs to link in
     static_libs = [
         "libklu.a",
@@ -123,6 +164,6 @@ setup(
     version=__version__,
     packages=["PyKLU"],
     ext_modules=make_extensions(),
-    cmdclass={"build_ext": BuildExtWithSuiteSparse},
+    cmdclass={"build_ext": BuildExtWithSuiteSparse} if not IS_WINDOWS else {},
     include_package_data=True,
 )
