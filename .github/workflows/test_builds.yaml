@@ -104,7 +104,7 @@ jobs:
           CIBW_ARCHS_WINDOWS: "AMD64"
 
           CIBW_ENVIRONMENT_WINDOWS: >
-            CONDA_PREFIX=${{ env.CONDA_PREFIX }}
+            CONDA_PREFIX=C:\\Miniconda\\envs\\build
 
           # Ensure numpy/cython/etc exist in each build env (cibuildwheel makes isolated envs)
           CIBW_BEFORE_BUILD_WINDOWS: >
