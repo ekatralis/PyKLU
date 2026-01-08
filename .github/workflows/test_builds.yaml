@@ -78,9 +78,9 @@ jobs:
       - name: Install build dependencies (conda)
         shell: bash -l {0}
         run: |
-          mamba install -c conda-forge -y suitesparse openblas
+          conda install -c conda-forge -y suitesparse openblas
           # Optional but often handy
-          mamba install -c conda-forge -y cmake
+          conda install -c conda-forge -y cmake
 
       - name: Set up Python for cibuildwheel
         uses: actions/setup-python@v5
