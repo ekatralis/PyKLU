@@ -4,7 +4,8 @@ dynamic = ["version"]
 description = "Python bindings for the SuiteSparse KLU sparse linear solver"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE.txt" }
+license = "LGPL-2.1-or-later"
+license-files = ["LICENSE.txt", "LICENSE_SuiteSparse.txt"]
 authors = [
   { name = "Evangelos Katralis", email = "evangelos.katralis@cern.ch" },
   { name = "Giovanni Iadarola", email = "giovanni.iadarola@cern.ch" }
@@ -21,10 +22,6 @@ classifiers = [
   "Intended Audience :: Developers",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Mathematics",
-
-  # License: project is under LGPL-2.1 (with full text in LICENSE)
-  "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
-
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.9",
@@ -34,9 +31,10 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 
-  # Only tested on Linux and macOS so far
+  # Only tested on Linux and macOS so far, but Windows is now experimentally supported
   "Operating System :: POSIX :: Linux",
   "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
 ]
 
 [project.urls]

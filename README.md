@@ -3,7 +3,7 @@
 Python bindings for the [SuiteSparse KLU](https://github.com/DrTimothyAldenDavis/SuiteSparse) sparse linear solver (CPU only).  
 PyKLU factors a sparse matrix once and lets you efficiently solve multiple right-hand sides using the same factorization.
 
-> **Status:** 0.1.0 (beta), Linux/macOS, Python ≥ 3.9
+> **Status:** 0.1.1 (beta), Linux/macOS/Windows(Experimental), Python ≥ 3.9
 ---
 
 ## Features
@@ -25,7 +25,7 @@ PyKLU factors a sparse matrix once and lets you efficiently solve multiple right
 ### Requirements
 
 - **Python**: 3.9 or later
-- **OS**: Linux or macOS (tested; Windows currently unsupported)
+- **OS**: Linux, macOS, Windows (experimental)
 - **Runtime dependencies**:
   - `numpy`
   - `scipy`
@@ -81,6 +81,34 @@ PyKLU includes optional tests that can verify that the solver is functioning cor
 ```bash
 pip install -e .[dev]
 pytest
+```
+
+### Installation from source on Windows
+When installing from source on Windows, PyKLU does not compile SuiteSparse from source. The installation must be done within a conda environment where SuiteSparse is installed through `conda-forge`. As such, the installation procedure on Windows looks as follows:
+
+Create a conda environment:
+```bash
+conda create -n pyklu_test python=3.1x # Replace with desired python version
+```
+Once inside the environment, install the dependencies. 
+```bash
+pip install numpy scipy
+```
+Install `suitesparse` and `openblas` inside the environment:
+```bash
+conda install -c conda-forge suitesparse openblas
+```
+Install the Visual Studio Build Tools for C++ from:
+```
+https://visualstudio.microsoft.com/visual-cpp-build-tools/
+```
+Clone the repository.
+```bash
+git clone --recursive https://github.com/ekatralis/PyKLU.git
+```
+Then from within the repository folder (`cd PyKLU`), the package can be installed via `pip` in editable mode:
+```bash
+pip install -e .
 ```
 
 ## Short User Guide
@@ -151,7 +179,7 @@ print("x:", x)
 
 ## Licensing
 © 2015-2025 CERN.  
-Created by Evangelos Katralis (evangelos.katralis@cern.ch). This library is an extension of the [PyKLU](https://github.com/PyCOMPLETE/PyKLU) library developed by Giovanni Iadarola (giovanni.iadarola@cern.ch) as a part of the PyCOMPLETE project. 
+Created by Evangelos Katralis (evangelos.katralis@cern.ch). This library is an extension of the [PyKLU](https://github.com/PyCOMPLETE/PyKLU) library developed by Giovanni Iadarola as a part of the PyCOMPLETE project. 
 
 PyKLU is licensed under the GNU Lesser General Public License v2.1 (LGPL-2.1) (see `LICENSE`).  
 This project includes the KLU sparse solver from SuiteSparse, distributed under the GNU LGPL v2.1 (or later) with a static-linking exception.  
@@ -159,4 +187,3 @@ See `LICENSE_SuiteSparse.txt` for the full SuiteSparse license text.
 
 ## TODO
 - Add compatibility with complex128 datatypes
-- Windows support
