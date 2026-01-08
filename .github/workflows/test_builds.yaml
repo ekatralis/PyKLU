@@ -109,7 +109,7 @@ jobs:
           # Ensure numpy/cython/etc exist in each build env (cibuildwheel makes isolated envs)
           CIBW_BEFORE_BUILD_WINDOWS: >
             python -m pip install --upgrade pip &&
-            python -m pip install cython numpy
+            python -m pip install cython numpy delvewheel
 
           # Bundle DLL deps into the wheel so users don't need conda
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
