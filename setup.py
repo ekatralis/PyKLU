@@ -91,24 +91,11 @@ class BuildExtWithSuiteSparse(build_ext):
 
         super().run()
 
-# Fix paths for Windows
-def winpath(p):
-    return p.replace("\\", "\\\\")
 
 def make_extensions():
     if IS_WINDOWS:
         if not CONDA_PREFIX:
             raise RuntimeError("CONDA_PREFIX not set. Use a conda environment.")
-
-        ss_inc = os.path.join(
-            winpath(CONDA_PREFIX), "Library", "include", "suitesparse"
-        )
-        ss_lib = os.path.join(
-            winpath(CONDA_PREFIX), "Library", "lib"
-        )
-
-        print("SuiteSparse include:", ss_inc)
-        print("SuiteSparse lib:", ss_lib)
 
         include_dirs = [
             "PyKLU",
