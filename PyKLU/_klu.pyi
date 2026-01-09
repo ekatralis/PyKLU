@@ -11,8 +11,6 @@ import numpy.typing as npt
 from scipy.sparse import csc_matrix
 
 ArrayLike = npt.ArrayLike
-Float64Array1D = npt.NDArray[np.float64]
-Float64Array2D = npt.NDArray[np.float64]
 
 class Klu:
     """
@@ -104,64 +102,6 @@ class Klu:
             ``copy=False`` is requested but the array is not contiguous in a
             required layout (e.g. non-contiguous 1D array, or non-Fortran
             2D array).
-        """
-        ...
-
-    def inplace_solve_batched(self, B: Float64Array2D) -> None: 
-        """
-        Solve ``A X = B`` in place for multiple right-hand sides.
-
-        This is a low-level, in-place variant of :meth:`solve` for batched
-        right-hand sides. It assumes that ``B`` already satisfies the
-        requirements of the underlying KLU solver and **modifies it in place**.
-
-        Parameters
-        ----------
-        B :
-            Two-dimensional ``float64`` array of shape ``(m, k)`` containing
-            the right-hand sides on entry and the corresponding solutions on
-            exit.
-
-            The array must be Fortran-contiguous (column-major), as required
-            by KLU for multiple right-hand sides.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        No copying or shape/dtype conversions are performed in this method.
-        Passing an array that does not satisfy the expected dtype/layout
-        constraints leads to undefined behavior at runtime.
-        """
-        ...
-    def inplace_solve_vector(self, B: Float64Array1D) -> None: 
-        """
-        Solve ``A x = b`` in place for a single right-hand side.
-
-        This is a low-level, in-place variant of :meth:`solve` for a single
-        vector right-hand side. It assumes that ``B`` already satisfies the
-        requirements of the underlying KLU solver and **modifies it in place**.
-
-        Parameters
-        ----------
-        B :
-            One-dimensional ``float64`` array of shape ``(m,)``. On entry, it
-            contains the right-hand side vector ``b``; on exit, it is replaced
-            with the solution vector ``x``.
-
-            The array must be contiguous, as required by KLU.
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        No copying or shape/dtype conversions are performed in this method.
-        Passing an array that does not have dtype ``float64`` or the expected
-        shape leads to undefined behavior at runtime.
         """
         ...
 

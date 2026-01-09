@@ -241,12 +241,16 @@ cdef class Klu:
             raise ValueError("B must be 1D or 2D array")
 
     cpdef inplace_solve_batched(self, cnp.ndarray[cnp.float64_t, ndim=2, mode="fortran"] B):
-        cdef int nrhs = B.shape[1]
-        lusolve(self.lus, &B[0,0], nrhs)
+        import warnings
+        raise DeprecationWarning(
+            "inplace_solve_batched is deprecated; use solve(B, copy=False) instead."
+        )
     
     cpdef inplace_solve_vector(self, cnp.ndarray[cnp.float64_t, ndim=1] B):
-        cdef int nrhs = 1
-        lusolve(self.lus, &B[0], nrhs)
+        import warnings
+        raise DeprecationWarning(
+            "inplace_solve_batched is deprecated; use solve(B, copy=False) instead."
+        )
 
     def __dealloc__(self):
         if self.lus is not NULL:
