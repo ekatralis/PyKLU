@@ -10,32 +10,69 @@ cimport numpy as cnp
 cdef class Klu:
     cdef lu_state* lus
     cdef int m, n
+    cdef bint is_complex
+    cdef object _solve_func
 
     def __init__(self, Acsc):
         if not isinstance(Acsc, csc_matrix):
             raise TypeError("A must be a scipy.sparse.csc_matrix")
         
-        # ensure correct dtype (float64 for data, int32 for indices)
-        if Acsc.data.dtype != np.float64 or \
-           Acsc.indptr.dtype != np.int32 or \
-           Acsc.indices.dtype != np.int32:
-            Acsc = Acsc.astype(np.float64) 
-
-        self.m, self.n = Acsc.shape
-        cdef int nnz = Acsc.nnz
-
-        cdef cnp.ndarray[cnp.float64_t, ndim=1] Acsc_data = Acsc.data
+        cdef bint is_complex = np.iscomplexobj(Acsc)
+        cdef cnp.ndarray[cnp.float64_t, ndim=1] Acsc_data_r
+        cdef cnp.ndarray[cnp.complex128_t, ndim=1] Acsc_data_c
         cdef cnp.ndarray[cnp.int32_t,   ndim=1] Acsc_indptr = Acsc.indptr
         cdef cnp.ndarray[cnp.int32_t,   ndim=1] Acsc_indices = Acsc.indices
+        cdef int nnz = Acsc.nnz
 
-        self.lus = construct_superlu(
-            self.m, self.n, nnz,
-            <double*> Acsc_data.data,
-            <int*>    Acsc_indices.data,
-            <int*>    Acsc_indptr.data,
-        )
+        self.is_complex = is_complex
+        self.m, self.n = Acsc.shape
 
-    cpdef solve(self, B, bint copy=True):
+        assert self.m == self.n, "Matrix must be square"
+
+        if not is_complex:
+            # ensure correct real dtype (float64 for data, int32 for indices)
+            if Acsc.data.dtype != np.float64 or \
+                Acsc.indptr.dtype != np.int32 or \
+                Acsc.indices.dtype != np.int32:
+                Acsc = Acsc.astype(np.float64) 
+
+            Acsc_data_r = Acsc.data
+            Acsc_indptr = Acsc.indptr
+            Acsc_indices = Acsc.indices
+            self.lus = construct_superlu(
+                            self.m, self.n, nnz,
+                            <double*> Acsc_data_r.data,
+                            <int32_t*>    Acsc_indices.data,
+                            <int32_t*>    Acsc_indptr.data,
+                            is_complex,
+                        )
+        else:
+            # ensure correct complex dtype (complex128 for data, int32 for indices)
+            if Acsc.data.dtype != np.complex128 or \
+                Acsc.indptr.dtype != np.int32 or \
+                Acsc.indices.dtype != np.int32:
+                Acsc = Acsc.astype(np.complex128) 
+            Acsc_data_c = Acsc.data
+            Acsc_indptr = Acsc.indptr
+            Acsc_indices = Acsc.indices
+            self.lus = construct_superlu(
+                            self.m, self.n, nnz,
+                            <double*> Acsc_data_c.data,
+                            <int32_t*>    Acsc_indices.data,
+                            <int32_t*>    Acsc_indptr.data,
+                            is_complex,
+                        )
+
+        
+        if not is_complex:
+            self._solve_func = self._real_solve
+        else:
+            self._solve_func = self._complex_solve
+
+    def solve(self, B, copy=True):
+        return self._solve_func(B, copy=copy)
+    
+    cpdef _real_solve(self, B, bint copy=True):
         """
         Solve A X = B.
 
@@ -106,6 +143,90 @@ cdef class Klu:
                     raise ValueError(
                         "copy=False with 2D B requires Fortran-contiguous "
                         "(column-major) float64 array with shape (m, k)"
+                    )
+                X2 = A2
+
+            lusolve(self.lus, <double*> X2.data, nrhs)
+
+            if copy:
+                return X2
+            else:
+                return arr  # same underlying array as A2
+
+        else:
+            raise ValueError("B must be 1D or 2D array")
+
+    cpdef _complex_solve(self, B, bint copy=True):
+        """
+        Solve A X = B.
+
+        B can be:
+          - shape (m,)  -> returns shape (m,)
+          - shape (m,k) -> returns shape (m,k)
+
+        copy=True  -> always work on a copy, return new array.
+        copy=False -> operate in-place on the given array (which must be
+                      float64 and with suitable layout).
+        """
+        cdef cnp.ndarray arr
+        cdef cnp.ndarray[cnp.complex128_t, ndim=1] X1, A1
+        cdef cnp.ndarray[cnp.complex128_t, ndim=2] X2, A2
+        cdef int nrhs
+
+        # Convert to ndarray and handle dtype
+        arr = np.asarray(B)
+
+        if arr.dtype != np.complex128:
+            if not copy:
+                raise TypeError("copy=False requires B.dtype == complex128")
+            arr = arr.astype(np.complex128, copy=True)
+
+        if arr.ndim == 1:
+            # --- 1D RHS: shape (m,) ---
+            if arr.shape[0] != self.m:
+                raise ValueError(
+                    "b has length %d, expected %d" % (arr.shape[0], self.m)
+                )
+
+            A1 = <cnp.ndarray[cnp.complex128_t, ndim=1]> arr
+            nrhs = 1
+
+            if copy:
+                # work on a separate array, user input untouched
+                X1 = np.array(A1, dtype=np.complex128, copy=True, order="C")
+            else:
+                # in-place: overwrite arr (and thus B, if it *is* that array)
+                if not (A1.flags["C_CONTIGUOUS"] or A1.flags["F_CONTIGUOUS"]):
+                    raise ValueError(
+                        "copy=False requires a contiguous 1D complex128 array"
+                    )
+                X1 = A1
+
+            lusolve(self.lus, <double*> X1.data, nrhs)
+
+            if copy:
+                return X1
+            else:
+                return arr  # same underlying array as A1
+
+        elif arr.ndim == 2:
+            # --- 2D RHS: shape (m,k) ---
+            if arr.shape[0] != self.m:
+                raise ValueError(
+                    "B has shape %s, expected (%d, k)" % (tuple([arr.shape[0],arr.shape[1]]), self.m)
+                )
+
+            A2 = <cnp.ndarray[cnp.complex128_t, ndim=2]> arr
+            nrhs = A2.shape[1]
+
+            if copy:
+                # KLU expects column-major layout for multi-RHS
+                X2 = np.array(A2, dtype=np.complex128, copy=True, order="F")
+            else:
+                if not A2.flags["F_CONTIGUOUS"]:
+                    raise ValueError(
+                        "copy=False with 2D B requires Fortran-contiguous "
+                        "(column-major) complex128 array with shape (m, k)"
                     )
                 X2 = A2
 
