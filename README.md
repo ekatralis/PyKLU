@@ -3,7 +3,7 @@
 Python bindings for the [SuiteSparse KLU](https://github.com/DrTimothyAldenDavis/SuiteSparse) sparse linear solver (CPU only).  
 PyKLU factors a sparse matrix once and lets you efficiently solve multiple right-hand sides using the same factorization.
 
-> **Status:** 0.1.1 (beta), Linux/macOS/Windows(Experimental), Python ≥ 3.9
+> **Status:** 0.2.0 (beta), Linux/macOS/Windows(Experimental), Python ≥ 3.9
 ---
 
 ## Features
