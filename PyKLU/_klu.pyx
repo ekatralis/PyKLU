@@ -89,6 +89,9 @@ cdef class Klu:
         cdef cnp.ndarray[cnp.float64_t, ndim=2] X2, A2
         cdef int nrhs
 
+        if self.is_complex:
+            raise AssertionError("_real_solve cannot be used with complex matrices")
+
         # Convert to ndarray and handle dtype
         arr = np.asarray(B)
 
@@ -172,6 +175,9 @@ cdef class Klu:
         cdef cnp.ndarray[cnp.complex128_t, ndim=1] X1, A1
         cdef cnp.ndarray[cnp.complex128_t, ndim=2] X2, A2
         cdef int nrhs
+
+        if not self.is_complex:
+            raise AssertionError("_complex_solve cannot be used with real matrices")
 
         # Convert to ndarray and handle dtype
         arr = np.asarray(B)
