@@ -113,7 +113,10 @@ pip install -e .
 
 ## Short User Guide
 
-❗ PyKLU currently only supports **float64** datatypes.
+❗ PyKLU supports **float64** and **complex128** datatypes.
+
+- Any complex input (matrix or RHS) is cast to `complex128`.
+- Any real input (matrix or RHS) is cast to `float64`.
 
 PyKLU provides detailed type-hints for the various options provided by its methods. It's behavior is designed to mimic `scipy.sparse`'s `splu` solver, so that it can be used as a drop-in replacement. Compared to `splu`, KLU can provide improved performance when dealing with very-sparse matrices.
 ### Creating a solver
@@ -147,11 +150,6 @@ X = solver.solve(B)
 ```
 The default behavior (`copy=True`) is to allocate a new array, copy B into it, and then perform the solve in-place on that copy. The function can be used to perform in-place operations instead by setting `copy = False`. It is worth noting, that if the RHS is incompatible with the format expected (column-major, contiguous and float64), the operation will not be performed in place. 
 
-If the RHS has the correct format, it is possible to use the following functions to perform in-place operations, without performing any checks:
-```python
-solver.inplace_solve_vector(b)
-solver.inplace_solve_batched(Bf)
-```
 ### Quickstart
 A sample script showcasing the usage of `PyKLU` can be seen below:
 ```python
@@ -184,6 +182,3 @@ Created by Evangelos Katralis (evangelos.katralis@cern.ch). This library is an e
 PyKLU is licensed under the GNU Lesser General Public License v2.1 (LGPL-2.1) (see `LICENSE`).  
 This project includes the KLU sparse solver from SuiteSparse, distributed under the GNU LGPL v2.1 (or later) with a static-linking exception.  
 See `LICENSE_SuiteSparse.txt` for the full SuiteSparse license text.
-
-## TODO
-- Add compatibility with complex128 datatypes
