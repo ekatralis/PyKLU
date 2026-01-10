@@ -11,7 +11,7 @@ import PyKLU
 SPARSE_SYSTEM_SIZE = 2000 # (n,n) matrix
 NUM_BATCHES = 20
 PRECISION = np.finfo(float).eps
-ABS_TOL = 1e-12
+ABS_TOL = 1e-14
 TOLERANCE_FACTOR = 2
 
 '''
