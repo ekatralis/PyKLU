@@ -7,7 +7,7 @@
 
 
 lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr, 
-		int* Acsc_indices_ptr, int* Acsc_indptr_ptr)
+		int32_t* Acsc_indices_ptr, int32_t* Acsc_indptr_ptr, int is_complex)
 {
 	lu_state* lus = (lu_state*)malloc(sizeof(lu_state));
 	
@@ -21,11 +21,18 @@ lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr,
 	//klu_common Common;
 	
 	lus->m = m;
+	lus->is_complex = is_complex;
 	klu_defaults(&(lus->Common));
 	
 	(lus->Symbolic) = klu_analyze (m, Acsc_indptr_ptr, Acsc_indices_ptr, &(lus->Common)) ;
-	lus->Numeric = klu_factor (Acsc_indptr_ptr, Acsc_indices_ptr, Acsc_data_ptr, lus->Symbolic,
+	if (is_complex){
+		lus->Numeric = klu_z_factor (Acsc_indptr_ptr, Acsc_indices_ptr, Acsc_data_ptr, lus->Symbolic,
 								&(lus->Common));	   
+	} else {
+		lus->Numeric = klu_factor (Acsc_indptr_ptr, Acsc_indices_ptr, Acsc_data_ptr, lus->Symbolic,
+								&(lus->Common));	   
+	}
+	
 	
 	// printf("Done factorization!\n");
 	   
@@ -35,7 +42,12 @@ lu_state* construct_superlu(int m, int n, int nnz, double* Acsc_data_ptr,
 
 void lusolve(lu_state* lus, double* BX, int nrhs)
 {
-    int ok = klu_solve(lus->Symbolic, lus->Numeric, lus->m, nrhs, BX, &(lus->Common));
+	int ok;
+	if (lus->is_complex){
+		ok = klu_z_solve(lus->Symbolic, lus->Numeric, lus->m, nrhs, BX, &(lus->Common));
+	} else {
+		ok = klu_solve(lus->Symbolic, lus->Numeric, lus->m, nrhs, BX, &(lus->Common));
+	}
     if (!ok) {
         printf("klu_solve failed (status %d)\n", lus->Common.status);
     }
@@ -46,7 +58,12 @@ void lu_destroy(lu_state* lus)
 	
 	// printf("Destroying C klu objects...\n");
 	klu_free_symbolic (&(lus->Symbolic), &(lus->Common));
-    klu_free_numeric (&(lus->Numeric), &(lus->Common));
+
+	if (lus->is_complex){
+		klu_z_free_numeric (&(lus->Numeric), &(lus->Common));
+	} else {
+		klu_free_numeric (&(lus->Numeric), &(lus->Common));
+	}
     free(lus);
     	
     // printf("Done.\n");

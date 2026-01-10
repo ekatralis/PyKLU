@@ -11,7 +11,7 @@ import PyKLU
 SPARSE_SYSTEM_SIZE = 2000 # (n,n) matrix
 NUM_BATCHES = 20
 PRECISION = np.finfo(float).eps
-ABS_TOL = 1e-12
+ABS_TOL = 1e-14
 TOLERANCE_FACTOR = 2
 
 '''
@@ -38,24 +38,32 @@ def batch_vectors_as_matrix(vector_list):
     return np.asfortranarray(np.moveaxis(np.array(vector_list),0,-1))
 
 @fix_random_seed(1337)
-def make_random_sparse_system(n, nbatches, density=0.01):
+def make_random_sparse_system(n, nbatches, dtype, density=0.01):
     A = sp.random(
         n, n,
         density=density,
         format="csc",
         random_state=np.random,
-        data_rvs=np.random.standard_normal
+        data_rvs=np.random.standard_normal,
+        dtype=dtype,
     )
     # Make it nonsingular & better conditioned:
     # Add something on the diagonal so pivots aren't tiny/zero
     A = A + sp.eye(n, format="csc") * 5.0  # tweak factor as you like
     b_array = []
     if nbatches == 0:
-        b = np.random.standard_normal(n)
+        if dtype == np.complex128:
+            b = np.random.standard_normal(n) + 1j * np.random.standard_normal(n)
+        else:
+            b = np.random.standard_normal(n)
         b_array.append(b)
     else:
         for i in range(nbatches):
-            b = np.cos(2*i/(nbatches-1)*np.pi) * np.random.standard_normal(n)
+            if dtype == np.complex128:
+                b = np.random.standard_normal(n) + 1j * np.random.standard_normal(n)
+            else:
+                b = np.random.standard_normal(n)
+            b = np.cos(2*i/(nbatches-1)*np.pi) * b
             b_array.append(b)
         b = batch_vectors_as_matrix(b_array)
     solver = sp.linalg.splu(A)
@@ -63,32 +71,48 @@ def make_random_sparse_system(n, nbatches, density=0.01):
     return (A, b, x, b_array)
 
 @fix_random_seed(1337)
-def make_tridiagonal_system(n, nbatches):
+def make_tridiagonal_system(n, nbatches, dtype):
+    if dtype not in [np.float64, np.complex128]:
+        raise ValueError("dtype must be np.float64 or np.complex128")
     main = 2.0 + np.abs(np.random.standard_normal(n))
     lower = np.random.standard_normal(n-1)
     upper = np.random.standard_normal(n-1)
     A = sp.diags(
         diagonals=[lower, main, upper],
         offsets=[-1, 0, 1],
-        format="csc"
+        format="csc",
+        dtype=dtype,
     )
     b_array = []
     if nbatches == 0:
-        b = np.random.standard_normal(n)
+        if dtype == np.complex128:
+            b = np.random.standard_normal(n) + 1j * np.random.standard_normal(n)
+        else:
+            b = np.random.standard_normal(n)
         b_array.append(b)
     else:
         for i in range(nbatches):
-            b = np.cos(2*i/(nbatches-1)*np.pi) * np.random.standard_normal(n)
+            if dtype == np.complex128:
+                b = np.random.standard_normal(n) + 1j * np.random.standard_normal(n)
+            else:
+                b = np.random.standard_normal(n)
+            b = np.cos(2*i/(nbatches-1)*np.pi) * b
             b_array.append(b)
         b = batch_vectors_as_matrix(b_array)
     solver = sp.linalg.splu(A)
     x = solver.solve(b)
     return (A, b, x, b_array)
 
-random_system = make_random_sparse_system(SPARSE_SYSTEM_SIZE, 0)
-tridiag_system = make_tridiagonal_system(SPARSE_SYSTEM_SIZE, 0)
+random_system_real = make_random_sparse_system(SPARSE_SYSTEM_SIZE, 0, dtype=np.float64)
+tridiag_system_real = make_tridiagonal_system(SPARSE_SYSTEM_SIZE, 0, dtype=np.float64)
+random_system_complex = make_random_sparse_system(SPARSE_SYSTEM_SIZE, 0, dtype=np.complex128)
+tridiag_system_complex = make_tridiagonal_system(SPARSE_SYSTEM_SIZE, 0, dtype=np.complex128)
 
-@pytest.mark.parametrize("sparse_system", [random_system, tridiag_system])
+@pytest.mark.parametrize("sparse_system", 
+                         [random_system_real, tridiag_system_real,
+                          random_system_complex, tridiag_system_complex], 
+                         ids=["real-random","real-tridiagonal",
+                              "complex-random","complex-tridiagonal"])
 def test_vector_solve(sparse_system):
     A_sp, b_sp, x_sp, _ = sparse_system
     assert not issymmetric(A_sp)
@@ -101,10 +125,16 @@ def test_vector_solve(sparse_system):
     assert_residual_ok(scipy_residual,klu_residual, 
                        abs_tol = ABS_TOL, factor = TOLERANCE_FACTOR)
 
-random_system = make_random_sparse_system(SPARSE_SYSTEM_SIZE, NUM_BATCHES)
-tridiag_system = make_tridiagonal_system(SPARSE_SYSTEM_SIZE, NUM_BATCHES)
+random_system_real = make_random_sparse_system(SPARSE_SYSTEM_SIZE, NUM_BATCHES, dtype=np.float64)
+tridiag_system_real = make_tridiagonal_system(SPARSE_SYSTEM_SIZE, NUM_BATCHES, dtype=np.float64)
+random_system_complex = make_random_sparse_system(SPARSE_SYSTEM_SIZE, NUM_BATCHES, dtype=np.complex128)
+tridiag_system_complex = make_tridiagonal_system(SPARSE_SYSTEM_SIZE, NUM_BATCHES, dtype=np.complex128)
 
-@pytest.mark.parametrize("sparse_system", [random_system, tridiag_system])
+@pytest.mark.parametrize("sparse_system", 
+                         [random_system_real, tridiag_system_real,
+                          random_system_complex, tridiag_system_complex], 
+                         ids=["real-random","real-tridiagonal",
+                              "complex-random","complex-tridiagonal"])
 def test_batched_solve(sparse_system):
     A_sp, b_sp, x_sp, _ = sparse_system
     assert not issymmetric(A_sp)
