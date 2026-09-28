@@ -32,11 +32,11 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.pyver }}-*
           CIBW_BEFORE_BUILD_LINUX: |
-            yum install -y openblas-devel || true
+            yum install -y openblas-devel
             python -m pip install --upgrade pip
             python -m pip install cmake numpy scipy
           CIBW_BEFORE_BUILD_MACOS: |
-            brew install openblas || true
+            brew install openblas
             python -m pip install --upgrade pip
             python -m pip install cmake numpy scipy
           CIBW_SKIP: "cp3?-manylinux_i686 *musllinux*"

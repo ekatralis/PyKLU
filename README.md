@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](#)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](#)
 [![License](https://img.shields.io/github/license/ekatralis/PyKLU)](LICENSE.txt)
-[![Build](https://img.shields.io/github/actions/workflow/status/ekatralis/pyklu/test_builds.yaml?branch=master)](
+[![Build](https://img.shields.io/github/actions/workflow/status/ekatralis/pyklu/test_builds.yaml?branch=main)](
 https://github.com/ekatralis/pyklu/actions/workflows/test_builds.yaml
 )
 
