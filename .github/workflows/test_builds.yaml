@@ -1,6 +1,9 @@
 name: Test Builds on all platforms
 
 on:
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -150,4 +153,3 @@ jobs:
         with:
           name: sdist
           path: dist/*.tar.gz
-
